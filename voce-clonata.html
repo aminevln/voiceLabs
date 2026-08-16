@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Tua Voce Clonata</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --bg: #0f1115;
+    --panel: #171a20;
+    --line: #262b33;
+    --accent: #6ee7c4;
+    --accent-dim: #1f3d34;
+    --text: #e8eaed;
+    --muted: #7a8290;
+    --danger: #ff6b6b;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family:'Space Grotesk', sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 40px 16px 80px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.3em;
+    text-transform:uppercase;
+    color: var(--muted);
+    margin-bottom:8px;
+  }
+  h1{
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight:700;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  h1 span{ color: var(--accent); }
+  .sub{
+    color: var(--muted);
+    font-size:14px;
+    margin-bottom:36px;
+    text-align:center;
+    max-width:480px;
+  }
+
+  .stack{ width:100%; max-width:560px; display:flex; flex-direction:column; gap:16px; }
+
+  .panel{
+    background: var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:22px;
+  }
+  .panel-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+    font-size:14px;
+    margin-bottom:14px;
+  }
+  .step-num{
+    width:22px; height:22px;
+    border-radius:50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .step-num.done{ background: var(--accent); color:#0a0e0c; }
+
+  label{
+    display:block;
+    font-size:12px;
+    color: var(--muted);
+    margin-bottom:6px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  input[type=password], input[type=text]{
+    width:100%;
+    background:#0c0e12;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:11px 12px;
+    color: var(--text);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    outline:none;
+    margin-bottom:12px;
+  }
+  input:focus{ border-color: var(--accent); }
+
+  .file-drop{
+    border:1.5px dashed var(--line);
+    border-radius:8px;
+    padding:22px;
+    text-align:center;
+    cursor:pointer;
+    color: var(--muted);
+    font-size:13px;
+    margin-bottom:12px;
+    transition: border-color 0.15s ease;
+  }
+  .file-drop:hover{ border-color: var(--accent); color: var(--text); }
+  .file-drop.has-file{ border-color: var(--accent); color: var(--accent); border-style:solid; }
+  input[type=file]{ display:none; }
+
+  textarea{
+    width:100%;
+    min-height:110px;
+    background:#0c0e12;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:12px;
+    color: var(--text);
+    font-family:'Space Grotesk', sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    outline:none;
+    resize:vertical;
+    margin-bottom:12px;
+  }
+  textarea:focus{ border-color: var(--accent); }
+
+  button{
+    width:100%;
+    background: var(--accent);
+    color:#0a0e0c;
+    border:none;
+    border-radius:6px;
+    padding:13px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    transition: opacity 0.15s ease, transform 0.08s ease;
+  }
+  button:hover{ opacity:0.9; }
+  button:active{ transform: scale(0.98); }
+  button:disabled{ opacity:0.35; cursor:not-allowed; }
+
+  .msg{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    margin-top:10px;
+    min-height:14px;
+    color: var(--muted);
+  }
+  .msg.err{ color: var(--danger); }
+  .msg.ok{ color: var(--accent); }
+
+  audio{
+    width:100%;
+    margin-top:14px;
+    border-radius:8px;
+  }
+
+  .locked{ opacity:0.4; pointer-events:none; }
+
+  footer{
+    margin-top:30px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:#4a4f57;
+    text-align:center;
+    max-width:520px;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+  <div class="eyebrow">voice cloning · uso personale</div>
+  <h1>La Tua <span>Voce Clonata</span></h1>
+  <div class="sub">Carica un campione della tua voce, poi scrivi qualsiasi frase e ascoltala con la tua voce.</div>
+
+  <div class="stack">
+
+    <div class="panel">
+      <div class="panel-title"><span class="step-num" id="numKey">1</span> API Key ElevenLabs</div>
+      <label for="apiKey">Incolla la tua chiave (rimane solo in questa pagina, non salvata)</label>
+      <input type="password" id="apiKey" placeholder="sk_...">
+      <div class="msg" id="keyMsg"></div>
+    </div>
+
+    <div class="panel" id="clonePanel">
+      <div class="panel-title"><span class="step-num" id="numClone">2</span> Clona la tua voce</div>
+      <label>Campione audio (mp3/wav, 1-3 minuti, voce pulita)</label>
+      <div class="file-drop" id="dropZone">Clicca per scegliere il file audio</div>
+      <input type="file" id="audioFile" accept="audio/*">
+      <label for="voiceName">Nome per questa voce</label>
+      <input type="text" id="voiceName" placeholder="es. La mia voce" value="La mia voce">
+      <button id="cloneBtn">Clona voce</button>
+      <div class="msg" id="cloneMsg"></div>
+    </div>
+
+    <div class="panel locked" id="generatePanel">
+      <div class="panel-title"><span class="step-num" id="numGen">3</span> Genera audio</div>
+      <label>Testo da far pronunciare</label>
+      <textarea id="testo" placeholder="Scrivi qui la frase che vuoi sentire con la tua voce...">Ciao, questa è la mia voce che dice qualcosa che non ho mai detto davvero.</textarea>
+      <button id="generateBtn">Genera audio</button>
+      <div class="msg" id="genMsg"></div>
+      <audio id="player" controls style="display:none;"></audio>
+    </div>
+
+  </div>
+
+  <footer>
+    Usa questo strumento solo con la tua voce o con voci per cui hai un consenso esplicito. La chiave API viene usata solo lato browser per chiamare ElevenLabs e non viene mai salvata o inviata altrove.
+  </footer>
+
+<script>
+  const apiKeyInput = document.getElementById('apiKey');
+  const keyMsg = document.getElementById('keyMsg');
+  const numKey = document.getElementById('numKey');
+
+  const dropZone = document.getElementById('dropZone');
+  const audioFile = document.getElementById('audioFile');
+  const voiceName = document.getElementById('voiceName');
+  const cloneBtn = document.getElementById('cloneBtn');
+  const cloneMsg = document.getElementById('cloneMsg');
+  const numClone = document.getElementById('numClone');
+  const clonePanel = document.getElementById('clonePanel');
+
+  const generatePanel = document.getElementById('generatePanel');
+  const generateBtn = document.getElementById('generateBtn');
+  const testo = document.getElementById('testo');
+  const genMsg = document.getElementById('genMsg');
+  const player = document.getElementById('player');
+  const numGen = document.getElementById('numGen');
+
+  let clonedVoiceId = null;
+
+  dropZone.addEventListener('click', () => audioFile.click());
+  audioFile.addEventListener('change', () => {
+    if(audioFile.files.length){
+      dropZone.textContent = '✓ ' + audioFile.files[0].name;
+      dropZone.classList.add('has-file');
+    }
+  });
+
+  apiKeyInput.addEventListener('input', () => {
+    if(apiKeyInput.value.trim().length > 10){
+      numKey.classList.add('done');
+      numKey.textContent = '✓';
+      keyMsg.textContent = '';
+    } else {
+      numKey.classList.remove('done');
+      numKey.textContent = '1';
+    }
+  });
+
+  cloneBtn.addEventListener('click', async () => {
+    const key = apiKeyInput.value.trim();
+    if(!key){
+      cloneMsg.textContent = 'Inserisci prima la API key.';
+      cloneMsg.className = 'msg err';
+      return;
+    }
+    if(!audioFile.files.length){
+      cloneMsg.textContent = 'Carica un file audio con la tua voce.';
+      cloneMsg.className = 'msg err';
+      return;
+    }
+
+    cloneBtn.disabled = true;
+    cloneMsg.textContent = 'Clonazione in corso... (può richiedere qualche secondo)';
+    cloneMsg.className = 'msg';
+
+    try{
+      const formData = new FormData();
+      formData.append('name', voiceName.value.trim() || 'La mia voce');
+      formData.append('files', audioFile.files[0]);
+
+      const res = await fetch('https://api.elevenlabs.io/v1/voices/add', {
+        method: 'POST',
+        headers: { 'xi-api-key': key },
+        body: formData
+      });
+
+      if(!res.ok){
+        const errText = await res.text();
+        throw new Error(`Errore ${res.status}: ${errText.slice(0,200)}`);
+      }
+
+      const data = await res.json();
+      clonedVoiceId = data.voice_id;
+
+      cloneMsg.textContent = '✓ Voce clonata con successo.';
+      cloneMsg.className = 'msg ok';
+      numClone.classList.add('done');
+      numClone.textContent = '✓';
+      generatePanel.classList.remove('locked');
+
+    } catch(err){
+      console.error(err);
+      cloneMsg.textContent = 'Errore nella clonazione: ' + err.message;
+      cloneMsg.className = 'msg err';
+    } finally {
+      cloneBtn.disabled = false;
+    }
+  });
+
+  generateBtn.addEventListener('click', async () => {
+    const key = apiKeyInput.value.trim();
+    const text = testo.value.trim();
+
+    if(!clonedVoiceId){
+      genMsg.textContent = 'Devi prima clonare la voce.';
+      genMsg.className = 'msg err';
+      return;
+    }
+    if(!text){
+      genMsg.textContent = 'Scrivi una frase da generare.';
+      genMsg.className = 'msg err';
+      return;
+    }
+
+    generateBtn.disabled = true;
+    genMsg.textContent = 'Generazione audio in corso...';
+    genMsg.className = 'msg';
+    player.style.display = 'none';
+
+    try{
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${clonedVoiceId}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': key,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.5, similarity_boost: 0.85 }
+        })
+      });
+
+      if(!res.ok){
+        const errText = await res.text();
+        throw new Error(`Errore ${res.status}: ${errText.slice(0,200)}`);
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      player.src = url;
+      player.style.display = 'block';
+      player.play();
+
+      genMsg.textContent = '✓ Audio generato.';
+      genMsg.className = 'msg ok';
+      numGen.classList.add('done');
+      numGen.textContent = '✓';
+
+    } catch(err){
+      console.error(err);
+      genMsg.textContent = 'Errore nella generazione: ' + err.message;
+      genMsg.className = 'msg err';
+    } finally {
+      generateBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
