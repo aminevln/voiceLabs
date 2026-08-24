@@ -7,7 +7,7 @@ const { getCurrentUser, requireAuth } = require('./middleware/auth');
 const crypto = require('crypto');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -639,6 +639,6 @@ app.get('/auth/logout', (req, res) => {
   res.redirect('/');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server avviato su http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server avviato sulla porta ${PORT}`);
 });
