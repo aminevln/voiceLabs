@@ -48,12 +48,41 @@ generateBtn.addEventListener('click', async () => {
       })
     });
 
+
+    // ========================================
+    // NON AUTENTICATO
+    // ========================================
+
+    if (response.status === 401) {
+
+      status.textContent =
+        'Devi accedere con Google per generare una voce.';
+
+      const login = confirm(
+        'Devi accedere con Google per generare una voce.\n\nVuoi effettuare il login?'
+      );
+
+      if (login) {
+        window.location.href = '/auth/google';
+      }
+
+      return;
+    }
+
+
+    // ========================================
+    // ALTRI ERRORI
+    // ========================================
+
     if (!response.ok) {
 
-      let errorMessage = 'Errore durante la generazione.';
+      let errorMessage =
+        'Errore durante la generazione.';
 
       try {
-        const errorData = await response.json();
+
+        const errorData =
+          await response.json();
 
         if (errorData.error) {
           errorMessage = errorData.error;
@@ -67,33 +96,55 @@ generateBtn.addEventListener('click', async () => {
     }
 
 
-    // Riceviamo l'MP3
-    const audioBlob = await response.blob();
+    // ========================================
+    // RICEVI MP3
+    // ========================================
+
+    const audioBlob =
+      await response.blob();
 
 
     // Elimina vecchio URL
     if (currentAudioUrl) {
-      URL.revokeObjectURL(currentAudioUrl);
+
+      URL.revokeObjectURL(
+        currentAudioUrl
+      );
+
     }
 
 
     // Crea nuovo URL
-    currentAudioUrl = URL.createObjectURL(audioBlob);
+    currentAudioUrl =
+      URL.createObjectURL(
+        audioBlob
+      );
 
 
     // Imposta audio
-    player.src = currentAudioUrl;
-    player.style.display = 'block';
+    player.src =
+      currentAudioUrl;
+
+    player.style.display =
+      'block';
 
 
-    status.textContent = '✓ Audio generato con successo.';
+    status.textContent =
+      '✓ Audio generato con successo.';
 
 
-    // Prova ad avviare automaticamente
+    // ========================================
+    // AUTOPLAY
+    // ========================================
+
     try {
+
       await player.play();
+
     } catch {
+
       // Il browser potrebbe bloccare l'autoplay
+
     }
 
 
@@ -101,11 +152,13 @@ generateBtn.addEventListener('click', async () => {
 
     console.error(error);
 
-    status.textContent = 'Errore: ' + error.message;
+    status.textContent =
+      'Errore: ' + error.message;
 
   } finally {
 
-    generateBtn.disabled = false;
+    generateBtn.disabled =
+      false;
 
     generateBtn.innerHTML =
       '<span class="wave-icon">◫</span> GENERA AUDIO';
@@ -113,6 +166,7 @@ generateBtn.addEventListener('click', async () => {
   }
 
 });
+
 
 // ========================================
 // ACCOUNT
@@ -133,6 +187,11 @@ async function loadAccount() {
     const response =
       await fetch('/api/me');
 
+
+    // ========================================
+    // NON AUTENTICATO
+    // ========================================
+
     if (!response.ok) {
 
       accountArea.innerHTML = `
@@ -146,6 +205,11 @@ async function loadAccount() {
 
       return;
     }
+
+
+    // ========================================
+    // UTENTE
+    // ========================================
 
     const data =
       await response.json();
@@ -257,10 +321,14 @@ async function loadAccount() {
 
 
     const accountButton =
-      document.getElementById('accountButton');
+      document.getElementById(
+        'accountButton'
+      );
 
     const accountMenu =
-      document.getElementById('accountMenu');
+      document.getElementById(
+        'accountMenu'
+      );
 
 
     accountButton.addEventListener(
@@ -269,7 +337,9 @@ async function loadAccount() {
 
         event.stopPropagation();
 
-        accountMenu.classList.toggle('open');
+        accountMenu.classList.toggle(
+          'open'
+        );
 
       }
     );
@@ -279,7 +349,9 @@ async function loadAccount() {
       'click',
       () => {
 
-        accountMenu.classList.remove('open');
+        accountMenu.classList.remove(
+          'open'
+        );
 
       }
     );
@@ -306,7 +378,8 @@ function escapeHtml(text) {
   const div =
     document.createElement('div');
 
-  div.textContent = text;
+  div.textContent =
+    text;
 
   return div.innerHTML;
 
