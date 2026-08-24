@@ -7,7 +7,7 @@ const { getCurrentUser, requireAuth } = require('./middleware/auth');
 const crypto = require('crypto');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -391,6 +391,20 @@ app.get('/auth/google/callback', async (req, res) => {
     const path = require('path');
 
     const usersFile = path.join(__dirname, 'data', 'users.json');
+
+    const dataDir = path.join(__dirname, 'data');
+
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+if (!fs.existsSync(usersFile)) {
+  fs.writeFileSync(
+    usersFile,
+    '[]',
+    'utf8'
+  );
+}
 
     let users = [];
 
