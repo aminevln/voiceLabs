@@ -500,6 +500,20 @@ app.get('/api/generations', requireAuth, (req, res) => {
       'generations.json'
     );
 
+    const dataDir = path.join(__dirname, 'data');
+
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+if (!fs.existsSync(generationsFile)) {
+  fs.writeFileSync(
+    generationsFile,
+    '[]',
+    'utf8'
+  );
+}
+
     const fileContent = fs.readFileSync(
       generationsFile,
       'utf8'
