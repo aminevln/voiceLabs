@@ -5,9 +5,66 @@ const { OAuth2Client } = require('google-auth-library');
 const cookieParser = require('cookie-parser');
 const { getCurrentUser, requireAuth } = require('./middleware/auth');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// ========================================
+// STORAGE
+// ========================================
+
+const dataDir = path.join(__dirname, 'data');
+
+const usersFile = path.join(
+  dataDir,
+  'users.json'
+);
+
+const generationsFile = path.join(
+  dataDir,
+  'generations.json'
+);
+
+const audioDirectory = path.join(
+  __dirname,
+  'audio'
+);
+
+
+// Crea cartelle
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, {
+    recursive: true
+  });
+}
+
+if (!fs.existsSync(audioDirectory)) {
+  fs.mkdirSync(audioDirectory, {
+    recursive: true
+  });
+}
+
+
+// Crea users.json
+if (!fs.existsSync(usersFile)) {
+  fs.writeFileSync(
+    usersFile,
+    '[]',
+    'utf8'
+  );
+}
+
+
+// Crea generations.json
+if (!fs.existsSync(generationsFile)) {
+  fs.writeFileSync(
+    generationsFile,
+    '[]',
+    'utf8'
+  );
+}
 
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -187,12 +244,6 @@ app.post('/generate', requireAuth, async (req, res) => {
     // CARTELLA AUDIO
     // ========================================
 
-    const fs = require('fs');
-    const path = require('path');
-
-    const audioDirectory =
-      path.join(__dirname, 'audio');
-
     if (!fs.existsSync(audioDirectory)) {
 
       fs.mkdirSync(audioDirectory, {
@@ -216,13 +267,6 @@ app.post('/generate', requireAuth, async (req, res) => {
       audioPath,
       audioBuffer
     );
-
-    const generationsFile =
-      path.join(
-        __dirname,
-        'data',
-        'generations.json'
-      );
 
 
     let generations = [];
@@ -387,25 +431,6 @@ app.get('/auth/google/callback', async (req, res) => {
 
     const payload = ticket.getPayload();
 
-    const fs = require('fs');
-    const path = require('path');
-
-    const usersFile = path.join(__dirname, 'data', 'users.json');
-
-    const dataDir = path.join(__dirname, 'data');
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
-if (!fs.existsSync(usersFile)) {
-  fs.writeFileSync(
-    usersFile,
-    '[]',
-    'utf8'
-  );
-}
-
     let users = [];
 
     try {
@@ -491,28 +516,6 @@ app.get('/api/generations', requireAuth, (req, res) => {
 
   try {
 
-    const fs = require('fs');
-    const path = require('path');
-
-    const generationsFile = path.join(
-      __dirname,
-      'data',
-      'generations.json'
-    );
-
-    const dataDir = path.join(__dirname, 'data');
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
-if (!fs.existsSync(generationsFile)) {
-  fs.writeFileSync(
-    generationsFile,
-    '[]',
-    'utf8'
-  );
-}
 
     const fileContent = fs.readFileSync(
       generationsFile,
@@ -562,20 +565,6 @@ if (!fs.existsSync(generationsFile)) {
 app.delete('/api/generations/:id', requireAuth, (req, res) => {
 
   try {
-
-    const fs = require('fs');
-    const path = require('path');
-
-    const generationsFile = path.join(
-      __dirname,
-      'data',
-      'generations.json'
-    );
-
-    const audioDirectory = path.join(
-      __dirname,
-      'audio'
-    );
 
     const fileContent = fs.readFileSync(
       generationsFile,
