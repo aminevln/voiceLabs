@@ -1,0 +1,5 @@
+node_modules/
+.env
+audio/
+data/users.json
+data/generations.json

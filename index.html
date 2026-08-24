@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vocitalia — La tua voce, ovunque.</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="#">Gruppo</a>
+      <a href="#">Lavora con noi</a>
+      <a href="#">Whistleblowing</a>
+      <a href="#">Supporto</a>
+    </div>
+
+    <div class="topbar-right">
+      <span class="accessibility">♿</span>
+      <span>ITA⌄</span>
+      <div class="account-area" id="accountArea">
+  <a href="/auth/google" class="login-link">
+    Accedi con Google
+  </a>
+</div>
+    </div>
+  </div>
+
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <a href="#" class="logo-link">
+      <img src="logo.png" alt="Vocitalia" class="logo">
+    </a>
+
+    <nav class="navigation">
+      <a href="#" class="active">Genera voce</a>
+      <a href="/generazioni.html">Le mie frasi</a>
+      <a href="#">Impostazioni</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button" aria-label="Cerca">
+        ⌕
+      </button>
+
+      <button class="menu-button" aria-label="Menu">
+        ☰
+      </button>
+    </div>
+
+  </header>
+
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <section class="intro">
+      <h1>Genera la tua voce</h1>
+      <p>
+        Scrivi quello che vuoi far dire e ascoltalo con la tua voce clonata.
+      </p>
+    </section>
+
+
+    <!-- GENERATOR CARD -->
+    <section class="generator-card">
+
+      <div class="generator-content">
+
+        <!-- TEXT AREA -->
+        <div class="text-section">
+
+          <label for="text">
+            Testo da convertire
+          </label>
+
+          <textarea
+            id="text"
+            maxlength="5000"
+            placeholder="Scrivi qui quello che vuoi far dire..."
+          ></textarea>
+
+          <div class="text-footer">
+            <span>ⓘ Puoi inserire fino a 5000 caratteri.</span>
+            <span id="counter">0 / 5000</span>
+          </div>
+
+        </div>
+
+
+        <!-- VOICE -->
+        <aside class="voice-section">
+
+          <div class="voice-title">
+            <span class="voice-icon">♧</span>
+            <span>Voce selezionata</span>
+          </div>
+
+          <div class="voice-name">
+            La mia voce
+          </div>
+
+          <div class="voice-type">
+            <span class="badge">Clonata</span>
+          </div>
+
+          <div class="voice-id-label">
+            ID voce
+          </div>
+
+          <div class="voice-id">
+            3JP5zE1iF3UyhvCJJAHC
+          </div>
+
+          <button class="change-voice">
+            <span>Cambia voce</span>
+            <span>⌄</span>
+          </button>
+
+        </aside>
+
+      </div>
+
+
+      <!-- GENERATE BUTTON -->
+      <div class="generate-wrapper">
+
+        <button id="generateBtn" class="generate-button">
+          <span class="wave-icon">◫</span>
+          GENERA AUDIO
+        </button>
+
+      </div>
+
+
+      <!-- AUDIO PREVIEW -->
+      <div class="audio-section">
+
+        <div class="divider"></div>
+
+        <h2>Anteprima audio</h2>
+
+        <div class="audio-container">
+
+          <audio
+            id="player"
+            controls
+          ></audio>
+
+        </div>
+
+        <p id="status" class="status"></p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <div class="footer-logo">
+        <img src="logo.png" alt="Vocitalia">
+      </div>
+
+      <div class="footer-links">
+        <a href="#">Condizioni d'uso</a>
+        <a href="#">Vocitalia for Business</a>
+        <a href="#">Privacy</a>
+        <a href="#">Cookie policy</a>
+        <a href="#">Accessibilità</a>
+        <a href="#">Contatti</a>
+      </div>
+
+      <div class="social">
+        <a href="#">f</a>
+        <a href="#">◎</a>
+        <a href="#">𝕏</a>
+        <a href="#">▶</a>
+      </div>
+
+    </div>
+
+  </footer>
+  <script src="app.js"></script>
+
+</body>
+</html>

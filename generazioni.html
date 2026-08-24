@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vocitalia — Le mie frasi</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="#">Gruppo</a>
+      <a href="#">Lavora con noi</a>
+      <a href="#">Whistleblowing</a>
+      <a href="#">Supporto</a>
+    </div>
+
+    <div class="topbar-right">
+      <span>ITA⌄</span>
+      <a href="#" class="reserved-area">Area riservata&nbsp; ♙</a>
+    </div>
+  </div>
+
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <a href="/" class="logo-link">
+      <img src="logo.png" alt="Vocitalia" class="logo">
+    </a>
+
+    <nav class="navigation">
+
+      <a href="/">
+        Genera voce
+      </a>
+
+      <a href="/generazioni.html" class="active">
+        Le mie frasi
+      </a>
+
+      <a href="#">
+        Impostazioni
+      </a>
+
+    </nav>
+
+    <div class="header-actions">
+
+      <button class="icon-button" aria-label="Cerca">
+        ⌕
+      </button>
+
+      <button class="menu-button" aria-label="Menu">
+        ☰
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <section class="intro">
+
+      <h1>Le mie frasi</h1>
+
+      <p>
+        Qui trovi tutte le frasi che hai generato con la tua voce.
+      </p>
+
+    </section>
+
+
+    <!-- GENERATIONS -->
+    <section id="generations" class="generations">
+
+      <div class="loading">
+        Caricamento delle tue frasi...
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <div class="footer-logo">
+        <img src="logo.png" alt="Vocitalia">
+      </div>
+
+      <div class="footer-links">
+
+        <a href="#">Condizioni d'uso</a>
+        <a href="#">Vocitalia for Business</a>
+        <a href="#">Privacy</a>
+        <a href="#">Cookie policy</a>
+        <a href="#">Accessibilità</a>
+        <a href="#">Contatti</a>
+
+      </div>
+
+      <div class="social">
+
+        <a href="#">f</a>
+        <a href="#">◎</a>
+        <a href="#">𝕏</a>
+        <a href="#">▶</a>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <script>
+
+    const generationsContainer =
+      document.getElementById('generations');
+
+
+    async function loadGenerations() {
+
+      try {
+
+        const response =
+          await fetch('/api/generations');
+
+
+        if (!response.ok) {
+
+          if (response.status === 401) {
+
+            generationsContainer.innerHTML = `
+              <div class="empty-state">
+                <h2>Accesso richiesto</h2>
+                <p>Devi effettuare il login per vedere le tue frasi.</p>
+                <a href="/auth/google" class="login-button">
+                  Continua con Google
+                </a>
+              </div>
+            `;
+
+            return;
+          }
+
+          throw new Error(
+            'Errore nel caricamento delle generazioni.'
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        if (!data.generations.length) {
+
+          generationsContainer.innerHTML = `
+            <div class="empty-state">
+
+              <div class="empty-icon">
+                ♪
+              </div>
+
+              <h2>Nessuna frase ancora</h2>
+
+              <p>
+                Genera la tua prima frase con la tua voce.
+              </p>
+
+              <a href="/" class="login-button">
+                Genera audio
+              </a>
+
+            </div>
+          `;
+
+          return;
+        }
+
+
+        generationsContainer.innerHTML =
+          data.generations
+            .map(createGenerationCard)
+            .join('');
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        generationsContainer.innerHTML = `
+          <div class="empty-state">
+
+            <h2>Ops!</h2>
+
+            <p>
+              Non è stato possibile caricare le tue frasi.
+            </p>
+
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    function createGenerationCard(generation) {
+
+      const date =
+        new Date(generation.createdAt);
+
+
+      const formattedDate =
+        date.toLocaleDateString(
+          'it-IT',
+          {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+          }
+        );
+
+
+      const formattedTime =
+        date.toLocaleTimeString(
+          'it-IT',
+          {
+            hour: '2-digit',
+            minute: '2-digit'
+          }
+        );
+
+
+      return `
+
+        <article class="generation-card">
+
+          <div class="generation-header">
+
+            <div class="generation-date">
+
+              ${formattedDate}
+              ·
+              ${formattedTime}
+
+            </div>
+
+          </div>
+
+
+          <div class="generation-text">
+
+            ${escapeHtml(generation.text)}
+
+          </div>
+
+
+          <div class="generation-player">
+
+            <audio
+              controls
+              preload="metadata"
+              src="/audio/${encodeURIComponent(generation.audioFile)}"
+            ></audio>
+
+          </div>
+
+
+          <div class="generation-actions">
+
+  <a
+    href="/audio/${encodeURIComponent(generation.audioFile)}"
+    download
+    class="download-button"
+  >
+    ↓ Scarica
+  </a>
+
+  <button
+    class="delete-button"
+    onclick="deleteGeneration('${generation.id}')"
+  >
+    🗑 Elimina
+  </button>
+
+</div>
+
+        </article>
+
+      `;
+
+    }
+
+
+    function escapeHtml(text) {
+
+      const div =
+        document.createElement('div');
+
+      div.textContent = text;
+
+      return div.innerHTML;
+
+    }
+
+    async function deleteGeneration(id) {
+
+  const confirmed = confirm(
+    'Sei sicuro di voler eliminare questa frase?\n\nQuesta operazione non può essere annullata.'
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    const response = await fetch(
+      `/api/generations/${encodeURIComponent(id)}`,
+      {
+        method: 'DELETE'
+      }
+    );
+
+
+    const data = await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error || 'Errore durante l\'eliminazione.'
+      );
+
+    }
+
+
+    // Ricarica la lista
+    await loadGenerations();
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      'Non è stato possibile eliminare la frase.'
+    );
+
+  }
+
+}
+
+    loadGenerations();
+
+  </script>
+  <script src="app.js"></script>
+
+</body>
+</html>
